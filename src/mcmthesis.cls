@@ -7,11 +7,9 @@
 %% mcmthesis.dtx  (with options: `class')
 %% 
 %% -----------------------------------
-%% 
 %% This is a generated file.
 %% 
-%% Copyright (C)
-%%       2010 -- 2015 by Zhaoli Wang
+%% Copyright (C) 2010 -- 2015 by latexstudio
 %%       2014 -- 2019 by Liam Huang
 %%       2019 -- present by latexstudio.net
 %% 
@@ -23,15 +21,13 @@
 %% and version 1.3 or later is part of all distributions of LaTeX
 %% version 2005/12/01 or later.
 %% 
-%% This work has the LPPL maintenance status `maintained'.
-%% 
-%% The Current Maintainer of this work is Liam Huang.
+%% The Current Maintainer of this work is latexstudio.net.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesClass{mcmthesis}
-  [2020/01/18 v6.3 The Thesis Template Designed For MCM/ICM]
+  [2024/01/22 v6.3.3 The Thesis Template Designed For MCM/ICM]
 \typeout{The Thesis Template Designed For MCM/ICM}
-\def\MCMversion{v6.3}
+\def\MCMversion{v6.3.3}
 \RequirePackage{xkeyval}
 \RequirePackage{etoolbox}
 \define@boolkey{MCM}[MCM@opt@]{CTeX}[false]{}
@@ -40,13 +36,16 @@
 \define@boolkey{MCM}[MCM@opt@]{sheet}[true]{}
 \define@boolkey{MCM}[MCM@opt@]{titleinsheet}[false]{}
 \define@boolkey{MCM}[MCM@opt@]{keywordsinsheet}[false]{}
-\define@cmdkeys{MCM}[MCM@opt@]{tcn,problem}
+\define@cmdkeys{MCM}[MCM@opt@]{tcn,problem,tstyle}
 \define@key{MCM}{tcn}[0000]{\gdef\MCM@opt@tcn{#1}}
 \define@key{MCM}{problem}[A]{\gdef\MCM@opt@problem{#1}}
-\setkeys{MCM}{tcn=0000,problem=B}
+\define@key{MCM}{tstyle}[A]{\gdef\MCM@opt@tstyle{#1}}
+\setkeys{MCM}{tcn=0000,problem=B,tstyle=\color{red}\bfseries}
 
 \define@key{mcmthesis.cls}{tcn}[0000]{\gdef\MCM@opt@tcn{#1}}
 \define@key{mcmthesis.cls}{problem}[A]{\gdef\MCM@opt@problem{#1}}
+\define@key{mcmthesis.cls}{tstyle}[A]{\gdef\MCM@opt@tstyle{#1}}
+\define@boolkey{mcmthesis.cls}[MCM@opt@]{CTeX}{}
 \define@boolkey{mcmthesis.cls}[MCM@opt@]{titlepage}{}
 \define@boolkey{mcmthesis.cls}[MCM@opt@]{abstract}{}
 \define@boolkey{mcmthesis.cls}[MCM@opt@]{sheet}{}
@@ -59,11 +58,10 @@
 \MCM@opt@abstracttrue
 \newcommand{\mcmsetup}[1]{\setkeys{MCM}{#1}}
 \ProcessOptionsX\relax
-\LoadClass[a4paper, 12pt]{article}
+\LoadClass[letterpaper, 12pt]{article}
 \newcommand{\team}{Team \#\ \MCM@opt@tcn}
 \RequirePackage{fancyhdr, fancybox}
 \RequirePackage{ifthen}
-\RequirePackage{lastpage}
 \RequirePackage{listings}
 \RequirePackage[toc, page, title, titletoc, header]{appendix}
 \RequirePackage{paralist}
@@ -105,12 +103,19 @@
     \hypersetup{dvipdfm, hidelinks}
   \fi
 \fi
-\geometry{a4paper, margin = 1in}
-\pagestyle{fancy}
+\geometry{letterpaper, margin = 1in}
+\fancypagestyle{main}{
 \fancyhf{}
 \lhead{\small\sffamily \team}
 \rhead{\small\sffamily Page \thepage\ of \pageref{LastPage}}
-% \rhead{\small\sffamily Page \thepage}
+}
+\pagestyle{main}
+
+\fancypagestyle{aimain}{
+\fancyhf{}
+\lhead{\small\sffamily \team}
+\rhead{\small\sffamily Page \thepage }
+}
 \setlength\parskip{.5\baselineskip}
 \renewcommand\tableofcontents{%
     \centerline{\normalfont\Large\bfseries\sffamily\contentsname
@@ -131,40 +136,37 @@
 \graphicspath{{./}{./img/}{./fig/}{./image/}{./figure/}{./picture/}
             {./imgs/}{./figs/}{./images/}{./figures/}{./pictures/}}
 \def\maketitle{%
-  \let\saved@thepage\thepage
-  \let\thepage\relax
+  %\let\saved@thepage\thepage
+  %\let\thepage\relax
   \ifMCM@opt@sheet
   \makesheet
   \fi
   \newpage
+  \setcounter{page}{1}
+  \pagestyle{fancy}
   \ifMCM@opt@titlepage
     \MCM@maketitle
   \fi
   \newpage
-  \let\thepage\saved@thepage
-  \setcounter{page}{2}
-  \pagestyle{fancy}
 }
-\def\abstractname{\large{Summary}}
+\def\abstractname{Summary}
 \ifMCM@opt@CTeX
   \newbox\@abstract%
   \setbox\@abstract\hbox{}%
   \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip1cm\rightskip1cm}%
-  \def\endabstract{\egroup\egroup}
+  \def\endabstract{\egroup\egroup}%
   \def\make@abstract{%
-    \begin{center}
-      \textbf{\abstractname}
-    \end{center}
+    \begin{center}%
+      \textbf{\abstractname}%
+    \end{center}%
     \usebox\@abstract\par
   }
 \else
   \RenewEnviron{abstract}{\xdef\@abstract{\expandonce\BODY}}
   \def\make@abstract{%
-    \begin{center}
-      \vspace*{-0.4cm}%
-      \textbf{\abstractname}
-    \end{center}
-    \vspace*{-0.4cm}%
+    \begin{center}%
+      \textbf{\abstractname}%
+    \end{center}%
     \@abstract\par
   }
 \fi
@@ -195,30 +197,29 @@
 \newcommand{\headset}{{\the\year}\\MCM/ICM\\Summary Sheet}
 \newcommand{\problem}[1]{\mcmsetup{problem = #1}}
 \def\makesheet{%
-  \pagestyle{empty}%
+  \thispagestyle{empty}%
   \null%
   \vspace*{-5pc}%
   \begin{center}
   \begingroup
   \setlength{\parindent}{0pt}
      \begin{minipage}[t]{0.33\linewidth}
-     \bfseries\centering%
-      Problem Chosen\\[0.7pc]
-      {\Huge\textbf{\MCM@opt@problem}}\\[2.8pc]
+      \centering%
+      \textbf{Problem Chosen}\\[0.7pc]
+      {\Large \MCM@opt@tstyle {\MCM@opt@problem}}\\[2.8pc]
      \end{minipage}%
      \begin{minipage}[t]{0.33\linewidth}
       \centering%
       \textbf{\headset}%
      \end{minipage}%
      \begin{minipage}[t]{0.33\linewidth}
-      \centering\bfseries%
-       Team Control Number\\[0.7pc]
-      {\Huge\textbf{\textcolor{red}{\MCM@opt@tcn}}}\\[2.8pc]
-      % {\Huge\textbf{\MCM@opt@tcn}}\\[2.8pc]
+      \centering%
+      \textbf{Team Control Number}\\[0.7pc]
+      {\Large\MCM@opt@tstyle{\MCM@opt@tcn}}\\[2.8pc]
      \end{minipage}\par
-  \rule{\linewidth}{1.0pt}\par
+  \rule{\linewidth}{1.5pt}
   \endgroup
-  % \vskip 10pt%
+  \vskip 5pt%
   \ifMCM@opt@titleinsheet
     \normalfont \LARGE \@title \par
   \fi
@@ -230,8 +231,11 @@
   \make@abstract
 \fi}
 \newcommand{\MCM@maketitle}{%
+  %\let\thepage\saved@thepage
+  %\setcounter{page}{1}
   \begin{center}%
-  \let \footnote \thanks
+  \let \footnote \thanks%
+  \pagestyle{fancy}%
     {\LARGE \@title \par}%
     \vskip 1.5em%
     {\large
@@ -262,14 +266,14 @@
 \def\@letterheadaddress{\relax}
 \newcommand{\lhaddress}[1]{\gdef\@letterheadaddress{#1}}
 \newenvironment{memo}[1][Memorandum]{%
-  \pagestyle{plain}%
+  \pagestyle{fancy}%
   \ifthenelse{\equal{\MCM@memologo}{\relax}}{%
     % without logo specified.
   }{%
     % with logo specified
     \begin{minipage}[t]{\columnwidth}%
       \begin{flushright}
-        \vspace{-0.6in}
+        \vspace{-0.2in}
         \MCM@memologo
         \vspace{0.5in}
       \par\end{flushright}%
@@ -299,11 +303,11 @@
 \newtheorem{Definition}[Theorem]{Definition}
 \newtheorem{Example}[Theorem]{Example}
 \renewcommand\section{\@startsection{section}{1}{\z@}%
-  {-0pt\@plus -.2ex \@minus -.2ex}%
+  {-1sp\@plus -.2ex \@minus -.2ex}%
   {1pt \@plus .2ex}%
   {\rmfamily\Large\bfseries}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-0pt\@plus -.2ex \@minus -.2ex}%
+  {-1sp\@plus -.2ex \@minus -.2ex}%
   {1pt \@plus .2ex}%
   {\rmfamily\large\bfseries}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
@@ -334,9 +338,56 @@
     keywordstyle=\color{darkblue}\bfseries,%
     identifierstyle=,%
     commentstyle=\color{darkgreen},%\itshape,%
-    stringstyle=\color{black}%
+    stringstyle=\color{black},%
+    breaklines=true,%
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
 }
-\lstloadlanguages{C,C++,Java,Matlab,Mathematica}
+\lstloadlanguages{C,C++,Java,Matlab,python,Mathematica}
+
+
+\def\AIcite{\@newl@bel b}
+\let\citation\@gobble
+\DeclareRobustCommand\AIcite{%
+  \@ifnextchar [{\@tempswatrue\@AIcitex}{\@tempswafalse\@AIcitex[]}}
+\def\@AIcitex[#1]#2{\leavevmode
+  \let\@AIcitea\@empty
+  \@AIcite{\@for\@AIciteb:=#2\do
+    {\@AIcitea\def\@AIcitea{,\penalty\@m\ }%
+     \edef\@AIciteb{\expandafter\@firstofone\@AIciteb\@empty}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@AIciteb}}\fi
+     \@ifundefined{b@\@AIciteb}{\hbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning
+         {Citation `\@AIciteb' on page \thepage \space undefined}}%
+       {\@AIcite@ofmt{\csname b@\@AIciteb\endcsname}}}}{#1}}
+\def\@AIcite#1#2{[AI: {#1\if@tempswa , #2\fi}]}
+\let\@AIcite@ofmt\hbox
+
+\def\reportname{Report on Use of AI}
+
+\providecommand\@AIlabel[1]{#1.~}
+
+\newenvironment{ReportAiUse}[1]
+     {\centerline{\underline{\large\sffamily\bfseries\reportname}}%
+     \vspace*{-.2em}
+      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@AIlabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@AIlabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\def\AImatter{\label{LastPage}\clearpage\pagestyle{aimain}}
 \endinput
 %% 
 %% This work consists of these files mcmthesis.dtx,
